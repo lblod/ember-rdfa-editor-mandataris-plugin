@@ -1,0 +1,13 @@
+<p class="u-spacer--small">
+  Wilde u de mandataris
+  <strong>{{info.mandataris.isBestuurlijkeAliasVan.gebruikteVoornaam}} {{info.mandataris.isBestuurlijkeAliasVan.achternaam}}</strong>,
+  met als functie <strong>{{info.mandataris.bekleedt.bestuursfunctie}}</strong> als aanwezige in de vegadering aanduiden?
+</p>
+
+{{#wu-button-group}}
+  {{wu-button label="Voeg in" size="small" isNarrow=true command="ctrl + j" commandLocation="below" onClick=(action "insert")}}
+  {{wu-button label="Zoek verder" size="small" isAlt=true isNarrow=true command="ctrl + f" commandLocation="below" onClick=null}}
+  {{wu-button label="Negeer" size="tiny" isLink=true isDark=true isNarrow=true command="esc" commandLocation="below" onClick=null}}
+{{/wu-button-group}}
+
+{{yield}}
