@@ -41,10 +41,10 @@ export default Service.extend({
    *
    * @private
   */
-  who: 'editor-plugins/mandataris-card',
+    who: 'editor-plugins/mandataris-card',
 
-  init() {
-    this.set('memoizedTokenize', memoize(this.tokenize.bind(this)));
+    init() {
+        this.set('memoizedTokenize', memoize(this.tokenize.bind(this)));
     this.set('tokensCache', {});
     this.set('contextMap', rdfaCardAnnotationsMap());
   },

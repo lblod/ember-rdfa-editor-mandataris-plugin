@@ -1,1 +1,1 @@
-export { default } from 'ember-rdfa-editor-mandataris-plugin/utils/memoize';
+export { default } from '@lblod/ember-rdfa-editor-mandataris-plugin/utils/memoize';

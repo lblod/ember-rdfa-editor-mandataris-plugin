@@ -1,5 +1,5 @@
 import EmberObject from '@ember/object';
-import MandatarisMixin from 'ember-rdfa-editor-mandataris-plugin/mixins/mandataris';
+import MandatarisMixin from '@lblod/ember-rdfa-editor-mandataris-plugin/mixins/mandataris';
 import { module, test } from 'qunit';
 
 module('Unit | Mixin | mandataris');
