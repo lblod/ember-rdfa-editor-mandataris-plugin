@@ -1,1 +1,1 @@
-export { default } from 'ember-rdfa-editor-mandataris-plugin/components/editor-plugins/mandataris-card';
+export { default } from '@lblod/ember-rdfa-editor-mandataris-plugin/components/editor-plugins/mandataris-card';

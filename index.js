@@ -1,5 +1,5 @@
 'use strict';
 
 module.exports = {
-  name: 'ember-rdfa-editor-mandataris-plugin'
+  name: '@lblod/ember-rdfa-editor-mandataris-plugin'
 };

@@ -1,1 +1,1 @@
-export { default } from 'ember-rdfa-editor-mandataris-plugin/utils/partition-array';
+export { default } from '@lblod/ember-rdfa-editor-mandataris-plugin/utils/partition-array';

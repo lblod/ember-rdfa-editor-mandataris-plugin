@@ -40,18 +40,18 @@ module.exports = {
       throw 'Could not insert into "all" profile';
     }
 
-    let rootPath = options.project.addonPackages['ember-rdfa-editor-mandataris-plugin'].path;
+      let rootPath = options.project.addonPackages['@lblod/ember-rdfa-editor-mandataris-plugin'].path;
     let self = this;
     await this.exportModels(rootPath);
     await this.exportTransforms(rootPath);
   },
 
   async exportModels(rootPath) {
-    return this.runBlueprintFromDir('ember-rdfa-editor-mandataris-plugin-export-models', path.join(rootPath, 'addon', 'models'), []);
+    return this.runBlueprintFromDir('@lblod/ember-rdfa-editor-mandataris-plugin-export-models', path.join(rootPath, 'addon', 'models'), []);
   },
 
   async exportTransforms(rootPath) {
-    return this.runBlueprintFromDir('ember-rdfa-editor-mandataris-plugin-export-transforms', path.join(rootPath, 'addon', 'transforms'), []);
+    return this.runBlueprintFromDir('@lblod/ember-rdfa-editor-mandataris-plugin-export-transforms', path.join(rootPath, 'addon', 'transforms'), []);
   },
 
   async runBlueprintFromDir(blueprint, dir, filesToIgnore) {

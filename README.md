@@ -1,4 +1,4 @@
-# ember-rdfa-editor-mandataris-plugin
+# @lblod/ember-rdfa-editor-mandataris-plugin
 
 RDFa editor plugin to insert mandatarissen in the editor.
 
@@ -7,7 +7,7 @@ RDFa editor plugin to insert mandatarissen in the editor.
 Install the plugin like an Ember addon in your host application.
 
 ```
-ember install git+https://github.com/lblod/ember-rdfa-editor-mandataris-plugin.git
+ember install @lblod/ember-rdfa-editor-mandataris-plugin.git
 ```
 
 ### Dispatcher configuration
