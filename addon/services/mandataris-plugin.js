@@ -13,7 +13,12 @@ import rdfaCardAnnotationsMap from '../utils/rdfa-card-annotations-map';
 * @extends Ember.Service
 */
 export default Service.extend({
-  bestuurseenhedenfilter: '5aa112cf4cac4f400600aaab', //for now only Niel, feed with comma separated list
+  /*********************************
+   * HACK TO COOP WITH BROKEN PLUGIN
+   *********************************/
+  bestuurseenhedenfilter: {'filter[bekleedt][bevat-in][is-tijdsspecialisatie-van][bestuurseenheid][naam]': 'Niel',
+                           page: {size: 1000}
+                          },
   store: service(),
 
   /**
@@ -306,11 +311,11 @@ export default Service.extend({
       return (mandataris.get('isBestuurlijkeAliasVan.fullName') || "").toLowerCase().startsWith(token.sanitizedString.toLowerCase());
     };
 
-    //TODO: refine
     if(!this.get('mandatarissenLoaded')){
-      await this.get('store').query('mandataris', {include:'is-bestuurlijke-alias-van,bekleedt',
-                                                   page: {size: 1000},
-                                                   'filter[bekleedt][bevat-in][is-tijdsspecialisatie-van][bestuurseenheid][id]': this.get('bestuurseenhedenfilter')});
+      let queryParams =  {include:'is-bestuurlijke-alias-van,bekleedt'};
+      queryParams = Object.assign(queryParams, this.get('bestuurseenhedenfilter'));
+
+      await this.get('store').query('mandataris', queryParams);
       this.set('mandatarissenLoaded', true);
     }
 
