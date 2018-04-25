@@ -4,6 +4,7 @@ import memoize from '../utils/memoize';
 import Service, { inject as service } from '@ember/service';
 import lblodUriMap from '../utils/lblod-uri-map';
 import rdfaCardAnnotationsMap from '../utils/rdfa-card-annotations-map';
+import { task } from 'ember-concurrency';
 
 /**
 * RDFa Editor plugin that hints mandatarissen when typing their name.
@@ -57,20 +58,18 @@ export default Service.extend({
   },
 
   /**
-   Handles the incoming events from the editor dispatcher
-
-   @method execute
-
-   @param {string} hrId Unique identifier of the event in the hintsRegistry
-   @param {Array} contexts RDFa contexts of the text snippets the event applies on
-   @param {Object} hintsRegistry Registry of hints in the editor
-   @param {Object} editor The RDFa editor instance
-
-   @return {Promise} A promise that updates the hintsRegistry with the correct hints
-
-   @public
+   * Restartable task to handle the incoming events from the editor dispatcher
+   *
+   * @method execute
+   *
+   * @param {string} hrId Unique identifier of the event in the hintsRegistry
+   * @param {Array} contexts RDFa contexts of the text snippets the event applies on
+   * @param {Object} hintsRegistry Registry of hints in the editor
+   * @param {Object} editor The RDFa editor instance
+   *
+   * @public
    */
-  async execute(hrId, contexts, hintsRegistry, editor) {
+  execute: task(function * (hrId, contexts, hintsRegistry, editor) {
     if (contexts.length === 0) return;
 
     let cards = [];
@@ -80,7 +79,7 @@ export default Service.extend({
 
       if(!rdfaCardTemplateData) continue;
 
-      let hints = await this.generateHintsForContext(context);
+      let hints = yield this.generateHintsForContext(context);
 
       //remove previous hints
       hintsRegistry.removeHintsInRegion(context.region, hrId, this.get('who'));
@@ -91,7 +90,7 @@ export default Service.extend({
     if (cards.length > 0) {
       hintsRegistry.addHints(hrId, this.get('who'), cards);
     }
-  },
+  }).restartable(),
 
   /**
    Detects which rdfa template to use
