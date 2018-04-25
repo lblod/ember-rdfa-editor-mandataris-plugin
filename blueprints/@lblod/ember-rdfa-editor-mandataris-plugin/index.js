@@ -43,21 +43,16 @@ module.exports = {
       let rootPath = options.project.addonPackages['@lblod/ember-rdfa-editor-mandataris-plugin'].path;
     let self = this;
     await this.exportModels(rootPath);
-    await this.exportTransforms(rootPath);
   },
 
   async exportModels(rootPath) {
     return this.runBlueprintFromDir('@lblod/ember-rdfa-editor-mandataris-plugin-export-models', path.join(rootPath, 'addon', 'models'), []);
   },
 
-  async exportTransforms(rootPath) {
-    return this.runBlueprintFromDir('@lblod/ember-rdfa-editor-mandataris-plugin-export-transforms', path.join(rootPath, 'addon', 'transforms'), []);
-  },
-
   async runBlueprintFromDir(blueprint, dir, filesToIgnore) {
     let blueprintTask = this.taskFor('generate-from-blueprint');
-    
-    let files = [];    
+
+    let files = [];
 
     fs.readdirSync(dir).forEach(file => {
       files.push(path.parse(file).name);
@@ -78,6 +73,6 @@ module.exports = {
       };
       await blueprintTask.run(options);
     };
-    
+
   }
 };
