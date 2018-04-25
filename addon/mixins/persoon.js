@@ -1,21 +1,18 @@
 import Mixin from '@ember/object/mixin';
 import { computed } from '@ember/object';
-import DS from 'ember-data';
+import attr from 'ember-data/attr';
+import { hasMany } from 'ember-data/relationships';
 
 export default Mixin.create({
-  // A string representation of this model, based on its attributes.
-  // This is what mu-cl-resources uses to search on, and how the model will be presented while editing relationships.
-  stringRep: computed.collect.apply(this,['id', 'achternaam', 'alternatieveNaam', 'gebruikteVoornaam', 'geslacht']),
-
   fullName: computed('gebruikteVoornaam', 'achternaam', function() {
     return `${this.get('gebruikteVoornaam')} ${this.get('achternaam')}`;
   }),
 
-  achternaam: DS.attr(),
-  alternatieveNaam: DS.attr(),
-  gebruikteVoornaam: DS.attr(),
-  geslacht: DS.attr(),
-  uri: DS.attr(),
+  achternaam: attr(),
+  alternatieveNaam: attr(),
+  gebruikteVoornaam: attr(),
+  geslacht: attr(),
+  uri: attr(),
 
-  isAangesteldAls: DS.hasMany('mandataris', {inverse: 'isBestuurlijkeAliasVan'})
+  isAangesteldAls: hasMany('mandataris', {inverse: 'isBestuurlijkeAliasVan'})
 });

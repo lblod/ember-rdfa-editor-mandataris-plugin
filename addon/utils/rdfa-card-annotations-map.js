@@ -7,7 +7,7 @@ export default function rdfaCardAnnotationsMap() {
     return {
       card: 'editor-plugins/mandataris-card',
       rdfaAnnotation:
-      `<span class="annotation" property="mandaat:bekrachtigtOntslagVan" resource="${mandataris.get('uri')}" typeof="mandaat:Mandataris">${mandataris.get('isBestuurlijkeAliasVan.fullName')} (${mandataris.get('bekleedt.bestuursfunctie')})</span>`
+      `<span class="annotation" property="mandaat:bekrachtigtOntslagVan" resource="${mandataris.get('uri')}" typeof="mandaat:Mandataris">${mandataris.get('isBestuurlijkeAliasVan.fullName')} (${mandataris.get('bekleedt.bestuursfunctie.label')})</span>`
     };
   };
 
@@ -16,7 +16,7 @@ export default function rdfaCardAnnotationsMap() {
       card: 'editor-plugins/mandataris-card',
       rdfaAnnotation:
       `<span class="annotation" property="mandaat:bekrachtigtAanstellingVan" resource="${mandataris.get('uri')}" typeof="mandaat:Mandataris">
-         ${mandataris.get('isBestuurlijkeAliasVan.fullName')} (${mandataris.get('bekleedt.bestuursfunctie')})
+         ${mandataris.get('isBestuurlijkeAliasVan.fullName')} (${mandataris.get('bekleedt.bestuursfunctie.label')})
        </span>`
     };
   };
@@ -31,7 +31,7 @@ export default function rdfaCardAnnotationsMap() {
       card: 'editor-plugins/zitting-aanwezig-card',
       rdfaAnnotation:
       `<span class="annotation" property="besluit:heeftAanwezigeBijStart"  resource="${mandataris.get('uri')}" typeof="mandaat:Mandataris">
-         ${mandataris.get('isBestuurlijkeAliasVan.fullName')} (${mandataris.get('bekleedt.bestuursfunctie')})
+         ${mandataris.get('isBestuurlijkeAliasVan.fullName')} (${mandataris.get('bekleedt.bestuursfunctie.label')})
        </span>`
     };
   };

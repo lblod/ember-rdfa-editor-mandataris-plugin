@@ -313,7 +313,7 @@ export default Service.extend({
     };
 
     if(!this.get('mandatarissenLoaded')){
-      let queryParams =  {include:'is-bestuurlijke-alias-van,bekleedt'};
+      let queryParams =  {include:'is-bestuurlijke-alias-van,bekleedt,bekleedt.bestuursfunctie'};
       queryParams = Object.assign(queryParams, this.get('bestuurseenhedenfilter'));
 
       await this.get('store').query('mandataris', queryParams);
