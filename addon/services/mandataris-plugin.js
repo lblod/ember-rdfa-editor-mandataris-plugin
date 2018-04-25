@@ -18,7 +18,7 @@ export default Service.extend({
    *********************************/
   bestuurseenhedenfilter: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
     'filter[bekleedt][bevat-in][is-tijdsspecialisatie-van][bestuurseenheid][naam]': 'Niel',
-    page: {size: 1000}
+    page: { size: 1000 }
   },
   store: service(),
 
