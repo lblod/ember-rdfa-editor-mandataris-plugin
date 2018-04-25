@@ -16,9 +16,10 @@ export default Service.extend({
   /*********************************
    * HACK TO COOP WITH BROKEN PLUGIN
    *********************************/
-  bestuurseenhedenfilter: {'filter[bekleedt][bevat-in][is-tijdsspecialisatie-van][bestuurseenheid][naam]': 'Niel',
-                           page: {size: 1000}
-                          },
+  bestuurseenhedenfilter: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
+    'filter[bekleedt][bevat-in][is-tijdsspecialisatie-van][bestuurseenheid][naam]': 'Niel',
+    page: {size: 1000}
+  },
   store: service(),
 
   /**
