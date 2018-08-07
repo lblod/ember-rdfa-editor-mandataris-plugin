@@ -1,25 +1,27 @@
-import { moduleForComponent, test } from 'ember-qunit';
+import { module, test } from 'qunit';
+import { setupRenderingTest } from 'ember-qunit';
+import { render, find } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 
-moduleForComponent('editor-plugins/mandataris-card', 'Integration | Component | editor plugins/mandataris card', {
-  integration: true
-});
+module('Integration | Component | editor plugins/mandataris card', function(hooks) {
+  setupRenderingTest(hooks);
 
-test('it renders', function(assert) {
+  test('it renders', async function(assert) {
 
-  // Set any properties with this.set('myProperty', 'value');
-  // Handle any actions with this.on('myAction', function(val) { ... });
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
 
-  this.render(hbs`{{editor-plugins/mandataris-card}}`);
+    await render(hbs`{{editor-plugins/mandataris-card}}`);
 
-  assert.equal(this.$().text().trim(), '');
+    assert.dom('*').hasText('');
 
-  // Template block usage:
-  this.render(hbs`
-    {{#editor-plugins/mandataris-card}}
-      template block text
-    {{/editor-plugins/mandataris-card}}
-  `);
+    // Template block usage:
+    await render(hbs`
+      {{#editor-plugins/mandataris-card}}
+        template block text
+      {{/editor-plugins/mandataris-card}}
+    `);
 
-  assert.equal(this.$().text().trim(), 'template block text');
+    assert.dom('*').hasText('template block text');
+  });
 });
