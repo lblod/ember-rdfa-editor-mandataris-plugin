@@ -4,7 +4,6 @@ import { belongsTo } from 'ember-data/relationships';
 
 export default Mixin.create({
   aantalHouders: attr(),
-  bestuursfunctie: attr(),
   uri: attr(),
   bestuursfunctie: belongsTo('bestuursfunctie-code', { inverse: null })
 });
