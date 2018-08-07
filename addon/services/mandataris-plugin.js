@@ -52,7 +52,7 @@ export default Service.extend({
   who: 'editor-plugins/mandataris-card',
 
   init() {
-    this._super(...arguments)
+    this._super(...arguments);
     this.set('memoizedTokenize', memoize(this.tokenize.bind(this)));
     this.set('tokensCache', {});
     this.set('contextMap', rdfaCardAnnotationsMap());
