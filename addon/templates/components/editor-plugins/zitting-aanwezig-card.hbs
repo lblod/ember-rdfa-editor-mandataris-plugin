@@ -5,7 +5,12 @@
 </p>
 
 {{#wu-button-group}}
-  {{wu-button label="Voeg in" size="small" isNarrow=true onClick=(action "insert")}}
+  {{wu-button
+    label="Voeg in"
+    size="small"
+    isNarrow=true
+    onClick=(action "insert")
+  }}
 {{/wu-button-group}}
 
 {{yield}}
