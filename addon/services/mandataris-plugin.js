@@ -3,6 +3,8 @@ import EmberObject from '@ember/object';
 import memoize from '../utils/memoize';
 import Service, { inject as service } from '@ember/service';
 import { task } from 'ember-concurrency';
+import { findPropertiesWithRange } from '@lblod/ember-generic-model-plugin-utils/utils/meta-model-utils';
+import { tokenizeNames} from '../utils/text-tokenizing-utils';
 /**
 * RDFa Editor plugin that hints mandatarissen when typing their name.
 *
@@ -34,6 +36,7 @@ export default Service.extend({
 
   init() {
     this._super(...arguments);
+    this.set('memoizedTokenize', memoize(tokenizeNames.bind(this)));
   },
 
   /**
@@ -54,16 +57,16 @@ export default Service.extend({
     let cards = [];
 
     for(let context of contexts){
-      let rdfaCardTemplateData = this.detectRdfaTemplateMapToUse(context);
+      let rdfaProperties = yield this.detectRdfaPropertiesToUse(context);
 
-      if(!rdfaCardTemplateData) continue;
+      if(!rdfaProperties) continue;
 
       let hints = yield this.generateHintsForContext(context);
 
       //remove previous hints
       hintsRegistry.removeHintsInRegion(context.region, hrId, this.get('who'));
 
-      cards.push(...this.generateCardsForHints(rdfaCardTemplateData, hrId, hintsRegistry, editor, hints));
+      cards.push(...this.generateCardsForHints(rdfaProperties, hrId, hintsRegistry, editor, hints));
     }
 
     if (cards.length > 0) {
@@ -71,6 +74,13 @@ export default Service.extend({
     }
   }).restartable(),
 
+  async detectRdfaPropertiesToUse(context){
+    //TODO: memoize somewhere?
+    let lastTriple = context.context.slice(-1)[0] || {};
+    if(!lastTriple.predicate == 'a')
+      return [];
+    let classType = lastTriple.object;
+    return findPropertiesWithRange(this.store, classType, 'http://data.vlaanderen.be/ns/mandaat#Mandataris');
   },
 
   /**
@@ -85,6 +95,13 @@ export default Service.extend({
    @private
    */
   async findPartialMatchingMandatarissen(token){
+    //TODO: now all mandatarissen are loaded upfront. To avoid too many queries. Check what better way there would be.
+    //TODO 2: We need to find mandatarissen for current bestuursorgaan in tijd
+    let bestuurseenhedenfilter = {
+      'filter[bekleedt][bevat-in][is-tijdsspecialisatie-van][bestuurseenheid][naam]': 'Niel',
+      page: { size: 1000 }
+    };
+
     let startsGebruikteVoornaam = mandataris => {
       return (mandataris.get('isBestuurlijkeAliasVan.gebruikteVoornaam') || "").toLowerCase().startsWith(token.sanitizedString.toLowerCase());
     };
@@ -99,6 +116,7 @@ export default Service.extend({
 
     if(!this.get('mandatarissenLoaded')){
       let queryParams =  {include:'is-bestuurlijke-alias-van,bekleedt,bekleedt.bestuursfunctie'};
+      queryParams = Object.assign(queryParams, bestuurseenhedenfilter);
 
       await this.get('store').query('mandataris', queryParams);
       this.set('mandatarissenLoaded', true);
@@ -126,8 +144,11 @@ export default Service.extend({
 
    @private
    */
+  generateCard(rdfaProperty, mandataris, location, hrId, hintsRegistry, editor) {
     const card = EmberObject.create({
       location: location,
+      info: {mandataris, location, hrId, hintsRegistry, editor, rdfaProperty},
+      card: this.who
     });
 
     return card;
@@ -148,10 +169,24 @@ export default Service.extend({
 
    @private
    */
+  generateCardsForHints(rdfaProperties, hrId, hintsRegistry, editor, hints){
+    let cards = [];
+    hints.forEach(hint => {
+      rdfaProperties.forEach(rdfaProperty => {
+        let card = this.generateCard(rdfaProperty,
+                                     hint.mandataris,
+                                     hint.normalizedLocation,
+                                     hrId, hintsRegistry,
+                                     editor);
+        cards.push(card);
+      });
+    });
+    return cards;
   },
 
   /**
    Procedure to generate hints.
+   TODO: clean up!!
 
    @method generateHintsForContext
 
@@ -166,13 +201,17 @@ export default Service.extend({
 
     let allHints = [];
 
+    for(let token of tokens){
+      let mandatarissen = await this.findPartialMatchingMandatarissen(token);
 
+      if(mandatarissen.length === 0){
         continue;
       }
 
       //add the normalized locaton
       token.normalizedLocation = this.normalizeLocation(token.location, context.region);
 
+      token.mandatarissen = mandatarissen;
 
       allHints = allHints.concat(token);
     }
@@ -183,6 +222,19 @@ export default Service.extend({
     //e.g 'Felix Ruiz' should give one hint for 'Felix Ruiz' and not 'Felix', 'Ruiz'
     let cleanedHints = allHints.filter(this.isLargestOverlappingHint);
 
+    let flattenedHints = [];
+
+    cleanedHints.forEach(h => {
+      h.mandatarissen.forEach(m => {
+        flattenedHints.push({
+          location: h.location,
+          normalizedLocation: h.normalizedLocation,
+          mandataris: m
+        });
+      });
+    });
+
+    return flattenedHints;
   },
 
   /**
