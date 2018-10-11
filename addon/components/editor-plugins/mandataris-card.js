@@ -1,5 +1,4 @@
 import Component from '@ember/component';
-import BaseCardComponent from '../../mixins/base-card-component';
 import layout from '../../templates/components/editor-plugins/mandataris-card';
 import ResourceRelationCardMixin from '@lblod/ember-generic-model-plugin-utils/mixins/resource-relation-card-mixin';
 
