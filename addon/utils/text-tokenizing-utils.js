@@ -1,30 +1,30 @@
-  /**
-   * Tokenizes string to try to find names or beginning of names
-   *
-   * Current implementation
-   * ----------------------
-   * Tokenizes string in words, scans for capital letter then
-   * groups (till arbitrary cutoff), keeps location (in original string) and santizes string.
-   *
-   * TODO: clean up
-   *
-   * @method tokenizeNames
-   *
-   * @param {String} 'Felix  ruiz  '
-   * @param {Integer} min amount of string length to be considered a token
-   * @param {Integer} max size of word group to be considered beloninging to a name
-   *
-   * @return {Array}
-   *
-   *  [ { "location":[0,6],
-   *      "sanitizedString":"Felix"
-   *      },
-   *    { "location":[0,12],
-   *      "sanitizedString": "Felix ruiz"}
-   *  ]
-   *
-   *  @public
-   */
+/**
+ * Tokenizes string to try to find names or beginning of names
+ *
+ * Current implementation
+ * ----------------------
+ * Tokenizes string in words, scans for capital letter then
+ * groups (till arbitrary cutoff), keeps location (in original string) and santizes string.
+ *
+ * TODO: clean up
+ *
+ * @method tokenizeNames
+ *
+ * @param {String} 'Felix  ruiz  '
+ * @param {Integer} min amount of string length to be considered a token
+ * @param {Integer} max size of word group to be considered beloninging to a name
+ *
+ * @return {Array}
+ *
+ *  [ { "location":[0,6],
+ *      "sanitizedString":"Felix"
+ *      },
+ *    { "location":[0,12],
+ *      "sanitizedString": "Felix ruiz"}
+ *  ]
+ *
+ *  @public
+ */
 const tokenizeNames = function tokenizeNames(string, minTokenStringLength = 3 , maxGroupSize = 5){
   //TODO: cleanup
   let words = string.match(/\S+\s*/g);
