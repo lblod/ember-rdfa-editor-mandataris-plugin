@@ -62,9 +62,6 @@ export default Service.extend({
 
     yield Promise.all(contexts.map(async (context) =>{ return this.setBestuurseenheidFromZitting(context); } ));
 
-    //wait a little to avoid explosion of queries
-    yield timeout(300);
-
     let cards = [];
 
     for(let context of contexts){
@@ -75,7 +72,8 @@ export default Service.extend({
 
       let hints = yield this.generateHintsForContext(context);
 
-      //remove previous hints
+      if(hints.length == 0) continue;
+
       hintsRegistry.removeHintsInRegion(context.region, hrId, this.get('who'));
 
       cards.push(...this.generateCardsForHints(rdfaProperties, hrId, hintsRegistry, editor, hints));
@@ -84,7 +82,7 @@ export default Service.extend({
     if (cards.length > 0) {
       hintsRegistry.addHints(hrId, this.get('who'), cards);
     }
-  }).restartable(),
+  }),
 
   async detectRdfaPropertiesToUse(context){
     let lastTriple = context.context.slice(-1)[0] || {};
