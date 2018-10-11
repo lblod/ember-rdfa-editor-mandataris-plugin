@@ -2,7 +2,7 @@ import { A } from '@ember/array';
 import EmberObject from '@ember/object';
 import memoize from '../utils/memoize';
 import Service, { inject as service } from '@ember/service';
-import { task } from 'ember-concurrency';
+import { task, timeout } from 'ember-concurrency';
 import { findPropertiesWithRange } from '@lblod/ember-generic-model-plugin-utils/utils/meta-model-utils';
 import { tokenizeNames} from '../utils/text-tokenizing-utils';
 /**
@@ -57,12 +57,17 @@ export default Service.extend({
     if (contexts.length === 0) return;
 
     yield Promise.all(contexts.map(async (context) =>{ return this.setBestuurseenheidFromZitting(context); } ));
+
+    //wait a little to avoid explosion of queries
+    yield timeout(300);
+
     let cards = [];
 
     for(let context of contexts){
+
       let rdfaProperties = yield this.detectRdfaPropertiesToUse(context);
 
-      if(!rdfaProperties) continue;
+      if(rdfaProperties.length == 0) continue;
 
       let hints = yield this.generateHintsForContext(context);
 
@@ -78,7 +83,6 @@ export default Service.extend({
   }).restartable(),
 
   async detectRdfaPropertiesToUse(context){
-    //TODO: memoize somewhere?
     let lastTriple = context.context.slice(-1)[0] || {};
     if(!lastTriple.predicate == 'a')
       return [];
@@ -113,12 +117,18 @@ export default Service.extend({
    @private
    */
   async findPartialMatchingMandatarissen(token){
-    //TODO: now all mandatarissen are loaded upfront. To avoid too many queries. Check what better way there would be.
-    //TODO 2: We need to find mandatarissen for current bestuursorgaan in tijd
-    let bestuurseenhedenfilter = {
-      'filter[bekleedt][bevat-in][is-tijdsspecialisatie-van][bestuurseenheid][naam]': 'Niel',
-      page: { size: 1000 }
+    let queryParams = {
+      include:'is-bestuurlijke-alias-van,bekleedt,bekleedt.bestuursfunctie',
+      page: { size: 100 }
     };
+
+    if(this.bestuurseenheid)
+      queryParams['filter[bekleedt][bevat-in][is-tijdsspecialisatie-van][bestuurseenheid][id]'] = this.bestuurseenheid.id;
+
+
+    queryParams['filter[is-bestuurlijke-alias-van]'] = token.sanitizedString.toLowerCase();
+
+    await this.get('store').query('mandataris', queryParams);
 
     let startsGebruikteVoornaam = mandataris => {
       return (mandataris.get('isBestuurlijkeAliasVan.gebruikteVoornaam') || "").toLowerCase().startsWith(token.sanitizedString.toLowerCase());
@@ -131,14 +141,6 @@ export default Service.extend({
     let startsFullName = mandataris => {
       return (mandataris.get('isBestuurlijkeAliasVan.fullName') || "").toLowerCase().startsWith(token.sanitizedString.toLowerCase());
     };
-
-    if(!this.get('mandatarissenLoaded')){
-      let queryParams =  {include:'is-bestuurlijke-alias-van,bekleedt,bekleedt.bestuursfunctie'};
-      queryParams = Object.assign(queryParams, bestuurseenhedenfilter);
-
-      await this.get('store').query('mandataris', queryParams);
-      this.set('mandatarissenLoaded', true);
-    }
 
     return this.get('store').peekAll('mandataris').filter(mandataris => {
       return startsFullName(mandataris) ||  startsGebruikteVoornaam(mandataris) || startsAchternaam(mandataris);
