@@ -37,6 +37,8 @@ export default Service.extend({
   init() {
     this._super(...arguments);
     this.set('memoizedTokenize', memoize(tokenizeNames.bind(this)));
+    this.set('memoizedFindPropertiesWithRange',
+             memoize((classType, range) => findPropertiesWithRange(this.store, classType, range)));
   },
 
   /**
@@ -80,7 +82,7 @@ export default Service.extend({
     if(!lastTriple.predicate == 'a')
       return [];
     let classType = lastTriple.object;
-    return findPropertiesWithRange(this.store, classType, 'http://data.vlaanderen.be/ns/mandaat#Mandataris');
+    return this.memoizedFindPropertiesWithRange(classType, 'http://data.vlaanderen.be/ns/mandaat#Mandataris');
   },
 
   /**
