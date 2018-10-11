@@ -17,12 +17,14 @@ export default Component.extend(ResourceRelationCardMixin, {
       this.refer(await data.rdfaProperty,
                  this.serializeToJsonApi(data.mandataris),
                  data.mandataris.isBestuurlijkeAliasVan.get('fullName'),
-                 'editor-plugins/mandataris-card');
+                 'editor-plugins/mandataris-card',
+                 [{ who: 'editor-plugins/mandataris-card' }]);
     },
     async extend(data){
       await this.extend(await data.rdfaProperty,
                         this.serializeToJsonApi(data.mandataris),
-                        'editor-plugins/mandataris-card');
+                        'editor-plugins/mandataris-card',
+                       [{ who: 'editor-plugins/mandataris-card' }]);
     }
   }
 });

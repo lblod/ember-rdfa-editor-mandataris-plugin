@@ -53,8 +53,12 @@ export default Service.extend({
    *
    * @public
    */
-  execute: task(function * (hrId, contexts, hintsRegistry, editor) {
+  execute: task(function * (hrId, contexts, hintsRegistry, editor, extraInfo = []) {
     if (contexts.length === 0) return;
+
+    //if we see event was triggered by this plugin, ignore it
+    if(extraInfo.find(i => i && i.who == this.who))
+      return;
 
     yield Promise.all(contexts.map(async (context) =>{ return this.setBestuurseenheidFromZitting(context); } ));
 
