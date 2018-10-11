@@ -1,11 +1,19 @@
-<p class="u-spacer--small">Wilde u de mandataris <strong>{{info.mandataris.isBestuurlijkeAliasVan.fullName}}</strong>, met als functie <strong>{{info.mandataris.bekleedt.bestuursfunctie.label}}</strong> invoegen?</p>
+<p class="u-spacer--small">
+  Voeg <strong>{{info.mandataris.isBestuurlijkeAliasVan.fullName}}</strong> ({{info.mandataris.bekleedt.bestuursfunctie.label}}) als <strong>{{info.rdfaProperty.label}}</strong>
+</p>
 
 {{#wu-button-group}}
   {{wu-button
     label="Voeg in"
     size="small"
     isNarrow=true
-    onClick=(action "insert")
+    onClick=(action "refer" info)
+  }}
+  {{wu-button
+    label="Voeg uitgebreid in"
+    size="small"
+    isNarrow=true
+    onClick=(action "extend" info)
   }}
 {{/wu-button-group}}
 
