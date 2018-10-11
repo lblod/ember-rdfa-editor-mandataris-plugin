@@ -56,6 +56,7 @@ export default Service.extend({
   execute: task(function * (hrId, contexts, hintsRegistry, editor) {
     if (contexts.length === 0) return;
 
+    yield Promise.all(contexts.map(async (context) =>{ return this.setBestuurseenheidFromZitting(context); } ));
     let cards = [];
 
     for(let context of contexts){
@@ -83,6 +84,21 @@ export default Service.extend({
       return [];
     let classType = lastTriple.object;
     return this.memoizedFindPropertiesWithRange(classType, 'http://data.vlaanderen.be/ns/mandaat#Mandataris');
+  },
+
+  async setBestuurseenheidFromZitting(context){
+    let zitting = context.context.find(t => t.predicate == "a" && t.object == "http://data.vlaanderen.be/ns/besluit#Zitting");
+    let orgaan = context.context.find(t => t.predicate === "http://data.vlaanderen.be/ns/besluit#isGehoudenDoor");
+
+    if(!zitting || !orgaan)
+      return;
+
+    let eenheden = await this.store.query('bestuurseenheid', { 'filter[bestuursorganen][:uri:]': orgaan.object });
+
+    if(eenheden.length == 0)
+      return;
+
+    this.set('bestuurseenheid', eenheden.firstObject);
   },
 
   /**
