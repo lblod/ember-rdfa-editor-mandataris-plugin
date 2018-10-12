@@ -2,6 +2,10 @@
 
 RDFa editor plugin to insert mandatarissen in the editor.
 
+## Use
+If context is detected where mandataris is availible as property, the plugin will try to find names.
+Start a name with capital letter.
+
 ## Installation
 
 Install the plugin like an Ember addon in your host application.
