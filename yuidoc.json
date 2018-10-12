@@ -1,7 +1,7 @@
 {
   "name": "@lblod/ember-rdfa-editor-mandataris-plugin",
   "description": "Plugin to hint mandatarissen by their name",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "options": {
     "paths": [
       "addon"
