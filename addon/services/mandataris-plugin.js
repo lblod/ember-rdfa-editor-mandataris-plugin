@@ -122,16 +122,21 @@ export default Service.extend({
   async findPartialMatchingMandatarissen(token){
     let queryParams = {
       include:'is-bestuurlijke-alias-van,bekleedt,bekleedt.bestuursfunctie',
-      page: { size: 100 }
+      page: { size: 10000 }
     };
 
     if(this.bestuurseenheid)
       queryParams['filter[bekleedt][bevat-in][is-tijdsspecialisatie-van][bestuurseenheid][id]'] = this.bestuurseenheid.id;
+    else
+      return [];
 
 
     queryParams['filter[is-bestuurlijke-alias-van]'] = token.sanitizedString.toLowerCase();
 
-    await this.get('store').query('mandataris', queryParams);
+    if(!this.mandatarissenLoaded){
+      await this.get('store').query('mandataris', queryParams);
+      this.set('mandatarissenLoaded', true);
+    }
 
     let startsGebruikteVoornaam = mandataris => {
       return (mandataris.get('isBestuurlijkeAliasVan.gebruikteVoornaam') || "").toLowerCase().startsWith(token.sanitizedString.toLowerCase());
