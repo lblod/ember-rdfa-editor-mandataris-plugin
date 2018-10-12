@@ -1,4 +1,3 @@
-import { A } from '@ember/array';
 import EmberObject from '@ember/object';
 import memoize from '../utils/memoize';
 import Service, { inject as service } from '@ember/service';
@@ -62,6 +61,8 @@ export default Service.extend({
 
     yield Promise.all(contexts.map(async (context) =>{ return this.setBestuurseenheidFromZitting(context); } ));
 
+    yield timeout(300);
+
     let cards = [];
 
     for(let context of contexts){
@@ -82,7 +83,7 @@ export default Service.extend({
     if (cards.length > 0) {
       hintsRegistry.addHints(hrId, this.get('who'), cards);
     }
-  }),
+  }).restartable(),
 
   async detectRdfaPropertiesToUse(context){
     let lastTriple = context.context.slice(-1)[0] || {};
