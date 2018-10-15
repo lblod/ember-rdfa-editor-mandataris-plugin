@@ -4,6 +4,7 @@ import InsertResourceRelationCardMixin from '@lblod/ember-generic-model-plugin-u
 
 export default Component.extend(InsertResourceRelationCardMixin, {
   layout,
+  hintOwner: 'editor-plugins/scoped-bestuursorgaan-card',
 
   serializeToJsonApi(resource){
     //This is because we're not sure uri is kept (due to bug in mu-cl-resources/or ember-ds?)
@@ -14,17 +15,21 @@ export default Component.extend(InsertResourceRelationCardMixin, {
 
   actions: {
     async refer(data){
-      this.refer(await data.rdfaProperty,
-                 this.serializeToJsonApi(data.mandataris),
-                 data.mandataris.isBestuurlijkeAliasVan.get('fullName'),
-                 'editor-plugins/mandataris-card',
-                 [{ who: 'editor-plugins/mandataris-card' }]);
+      let mandatarisJsonApi = this.serializeToJsonApi(data.mandataris);
+      let rdfaRefer = await this.getReferRdfa(await data.rdfaProperty,
+                                              mandatarisJsonApi,
+                                              data.mandataris.isBestuurlijkeAliasVan.get('fullName'));
+      let mappedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
+      this.get('hintsRegistry').removeHintsAtLocation(this.get('location'), this.get('hrId'), this.hintOwner);
+      this.get('editor').replaceTextWithHTML(...mappedLocation, rdfaRefer, [{ who: 'editor-plugins/mandataris-card' }]);
+
     },
     async extend(data){
-      await this.extend(await data.rdfaProperty,
-                        this.serializeToJsonApi(data.mandataris),
-                        'editor-plugins/mandataris-card',
-                       [{ who: 'editor-plugins/mandataris-card' }]);
+      let mandatarisJsonApi = this.serializeToJsonApi(data.mandataris);
+      let rdfaExtended = await this.getExtendedRdfa(data.rdfaProperty, mandatarisJsonApi);
+      let mappedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
+      this.get('hintsRegistry').removeHintsAtLocation(this.get('location'), this.get('hrId'), this.hintOwner);
+      this.get('editor').replaceTextWithHTML(...mappedLocation, rdfaExtended, [{ who: 'editor-plugins/mandataris-card' }]);
     }
   }
 });
