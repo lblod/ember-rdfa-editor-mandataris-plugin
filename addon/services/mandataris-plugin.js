@@ -130,9 +130,6 @@ export default Service.extend({
     else
       return [];
 
-
-    queryParams['filter[is-bestuurlijke-alias-van]'] = token.sanitizedString.toLowerCase();
-
     if(!this.mandatarissenLoaded){
       await this.get('store').query('mandataris', queryParams);
       this.set('mandatarissenLoaded', true);
