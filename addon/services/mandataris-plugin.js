@@ -2,7 +2,6 @@ import EmberObject from '@ember/object';
 import memoize from '../utils/memoize';
 import Service, { inject as service } from '@ember/service';
 import { task, timeout } from 'ember-concurrency';
-import { findPropertiesWithRange } from '@lblod/ember-generic-model-plugin-utils/utils/meta-model-utils';
 import { tokenizeNames} from '../utils/text-tokenizing-utils';
 /**
 * RDFa Editor plugin that hints mandatarissen when typing their name.
@@ -12,6 +11,7 @@ import { tokenizeNames} from '../utils/text-tokenizing-utils';
 * @extends Ember.Service
 */
 export default Service.extend({
+  metaModelQuery: service(),
   store: service(),
 
   /**
@@ -37,7 +37,7 @@ export default Service.extend({
     this._super(...arguments);
     this.set('memoizedTokenize', memoize(tokenizeNames.bind(this)));
     this.set('memoizedFindPropertiesWithRange',
-             memoize((classType, range) => findPropertiesWithRange(this.store, classType, range)));
+             memoize((classType, range) => this.metaModelQuery.findPropertiesWithRange(classType, range)));
   },
 
   /**
