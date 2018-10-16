@@ -90,7 +90,8 @@ export default Service.extend({
     if(!lastTriple.predicate == 'a')
       return [];
     let classType = lastTriple.object;
-    return this.memoizedFindPropertiesWithRange(classType, 'http://data.vlaanderen.be/ns/mandaat#Mandataris');
+    if(classType.trim().length == 0) return [];
+    return this.memoizedFindPropertiesWithRange(classType.trim(), 'http://data.vlaanderen.be/ns/mandaat#Mandataris');
   },
 
   async setBestuurseenheidFromZitting(context){

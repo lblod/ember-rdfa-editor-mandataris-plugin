@@ -4,7 +4,7 @@ import InsertResourceRelationCardMixin from '@lblod/ember-generic-model-plugin-u
 
 export default Component.extend(InsertResourceRelationCardMixin, {
   layout,
-  hintOwner: 'editor-plugins/scoped-bestuursorgaan-card',
+  hintOwner: 'editor-plugins/mandataris-card',
 
   serializeToJsonApi(resource){
     //This is because we're not sure uri is kept (due to bug in mu-cl-resources/or ember-ds?)
