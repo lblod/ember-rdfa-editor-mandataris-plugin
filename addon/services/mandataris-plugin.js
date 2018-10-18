@@ -15,16 +15,6 @@ export default Service.extend({
   store: service(),
 
   /**
-   * Flag whether the mandatarissen are already loaded
-   *
-   * @property mandatarissenLoaded
-   * @type boolean
-   * @default false
-   * @private
-  */
-  mandatarissenLoaded: false,
-
-  /**
    * @property who
    * @type string
    * @default 'editor-plugins/mandataris-card'
@@ -59,7 +49,7 @@ export default Service.extend({
     if(extraInfo.find(i => i && i.who == this.who))
       return;
 
-    yield Promise.all(contexts.map(async (context) =>{ return this.setBestuurseenheidFromZitting(context); } ));
+    yield Promise.all(contexts.map(async (context) =>{ return this.loadMandatarissenForZitting(context); } ));
 
     yield timeout(300);
 
@@ -94,19 +84,28 @@ export default Service.extend({
     return this.memoizedFindPropertiesWithRange(classType.trim(), 'http://data.vlaanderen.be/ns/mandaat#Mandataris');
   },
 
-  async setBestuurseenheidFromZitting(context){
-    let zitting = context.context.find(t => t.predicate == "a" && t.object == "http://data.vlaanderen.be/ns/besluit#Zitting");
-    let orgaan = context.context.find(t => t.predicate === "http://data.vlaanderen.be/ns/besluit#isGehoudenDoor");
-
-    if(!zitting || !orgaan)
+  async loadMandatarissenForZitting(context){
+    let currContext = context.context.slice(-1)[0];
+    if(currContext.predicate != "http://mu.semte.ch/vocabularies/ext/zittingBestuursorgaanInTijd"){
+        return;
+    }
+    let bestuursorgaanUri = currContext.object;
+    if(this.get('bestuursorgaanInTijd') == bestuursorgaanUri)
       return;
 
-    let eenheden = await this.store.query('bestuurseenheid', { 'filter[bestuursorganen][:uri:]': orgaan.object });
+    this.set('bestuursorgaanInTijd', bestuursorgaanUri);
+    await this.store.unloadAll('persoon');
+    await this.store.unloadAll('mandataris');
+    await this.store.unloadAll('mandaat');
 
-    if(eenheden.length == 0)
-      return;
+    //start loading
+    let queryParams = {
+      include:'is-bestuurlijke-alias-van,bekleedt,bekleedt.bestuursfunctie',
+      'filter[bekleedt][bevat-in][:uri:]': bestuursorgaanUri,
+      page: { size: 10000 }
+    };
 
-    this.set('bestuurseenheid', eenheden.firstObject);
+    await this.get('store').query('mandataris', queryParams);
   },
 
   /**
@@ -121,20 +120,6 @@ export default Service.extend({
    @private
    */
   async findPartialMatchingMandatarissen(token){
-    let queryParams = {
-      include:'is-bestuurlijke-alias-van,bekleedt,bekleedt.bestuursfunctie',
-      page: { size: 10000 }
-    };
-
-    if(this.bestuurseenheid)
-      queryParams['filter[bekleedt][bevat-in][is-tijdsspecialisatie-van][bestuurseenheid][id]'] = this.bestuurseenheid.id;
-    else
-      return [];
-
-    if(!this.mandatarissenLoaded){
-      await this.get('store').query('mandataris', queryParams);
-      this.set('mandatarissenLoaded', true);
-    }
 
     let startsGebruikteVoornaam = mandataris => {
       return (mandataris.get('isBestuurlijkeAliasVan.gebruikteVoornaam') || "").toLowerCase().startsWith(token.sanitizedString.toLowerCase());
