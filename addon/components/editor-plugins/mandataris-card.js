@@ -1,4 +1,5 @@
 import Component from '@ember/component';
+import { computed } from '@ember/object';
 import layout from '../../templates/components/editor-plugins/mandataris-card';
 import InsertResourceRelationCardMixin from '@lblod/ember-generic-model-plugin-utils/mixins/insert-resource-relation-card-mixin';
 
@@ -13,10 +14,17 @@ export default Component.extend(InsertResourceRelationCardMixin, {
     return serializedResource;
   },
 
+  mandatarisCombinedWithProperties: computed('info', function(){
+    return this.get('info.rdfaProperties').map(prop => {
+      return {mandataris: this.get('info.mandataris'),
+              prop: prop};
+    });
+  }),
+
   actions: {
     async refer(data){
       let mandatarisJsonApi = this.serializeToJsonApi(data.mandataris);
-      let rdfaRefer = await this.getReferRdfa(await data.rdfaProperty,
+      let rdfaRefer = await this.getReferRdfa(await data.prop,
                                               mandatarisJsonApi,
                                               data.mandataris.isBestuurlijkeAliasVan.get('fullName'));
       let mappedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
@@ -26,7 +34,7 @@ export default Component.extend(InsertResourceRelationCardMixin, {
     },
     async extend(data){
       let mandatarisJsonApi = this.serializeToJsonApi(data.mandataris);
-      let rdfaExtended = await this.getExtendedRdfa(data.rdfaProperty, mandatarisJsonApi);
+      let rdfaExtended = await this.getExtendedRdfa(data.prop, mandatarisJsonApi);
       let mappedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
       this.get('hintsRegistry').removeHintsAtLocation(this.get('location'), this.get('hrId'), this.hintOwner);
       this.get('editor').replaceTextWithHTML(...mappedLocation, rdfaExtended, [{ who: 'editor-plugins/mandataris-card' }]);

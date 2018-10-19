@@ -155,10 +155,10 @@ export default Service.extend({
 
    @private
    */
-  generateCard(rdfaProperty, mandataris, location, hrId, hintsRegistry, editor) {
+  generateCard(rdfaProperties, mandataris, location, hrId, hintsRegistry, editor) {
     const card = EmberObject.create({
       location: location,
-      info: {mandataris, location, hrId, hintsRegistry, editor, rdfaProperty},
+      info: {mandataris, location, hrId, hintsRegistry, editor, rdfaProperties},
       card: this.who
     });
 
@@ -183,14 +183,12 @@ export default Service.extend({
   generateCardsForHints(rdfaProperties, hrId, hintsRegistry, editor, hints){
     let cards = [];
     hints.forEach(hint => {
-      rdfaProperties.forEach(rdfaProperty => {
-        let card = this.generateCard(rdfaProperty,
-                                     hint.mandataris,
-                                     hint.normalizedLocation,
-                                     hrId, hintsRegistry,
-                                     editor);
-        cards.push(card);
-      });
+      let card = this.generateCard(rdfaProperties,
+                                   hint.mandataris,
+                                   hint.normalizedLocation,
+                                   hrId, hintsRegistry,
+                                   editor);
+      cards.push(card);
     });
     return cards;
   },
