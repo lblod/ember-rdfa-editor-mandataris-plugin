@@ -49,7 +49,7 @@ export default Service.extend({
     if(extraInfo.find(i => i && i.who == this.who))
       return;
 
-    yield Promise.all(contexts.map(async (context) =>{ return this.loadMandatarissenForZitting(context); } ));
+    yield this.loadMandatarissenForZitting();
 
     yield timeout(300);
 
@@ -84,12 +84,12 @@ export default Service.extend({
     return this.memoizedFindPropertiesWithRange(classType.trim(), 'http://data.vlaanderen.be/ns/mandaat#Mandataris');
   },
 
-  async loadMandatarissenForZitting(context){
-    let currContext = context.context.slice(-1)[0];
-    if(currContext.predicate != "http://mu.semte.ch/vocabularies/ext/zittingBestuursorgaanInTijd"){
-        return;
-    }
-    let bestuursorgaanUri = currContext.object;
+  async loadMandatarissenForZitting(){
+    let node = document.querySelectorAll("[property='http://data.vlaanderen.be/ns/besluit#isGehoudenDoor']")[0];
+    if(!node || !node.attributes || !node.attributes.resource || !node.attributes.resource.value)
+      return;
+
+    let bestuursorgaanUri = node.attributes.resource.value;
     if(this.get('bestuursorgaanInTijd') == bestuursorgaanUri)
       return;
 
