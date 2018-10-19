@@ -1,6 +1,6 @@
 {
   "name": "@lblod/ember-rdfa-editor-mandataris-plugin",
-  "version": "0.6.7",
+  "version": "0.6.8",
   "description": "RDFa editor plugin to insert mandatarissen in the editor",
   "keywords": [
     "ember-addon"
