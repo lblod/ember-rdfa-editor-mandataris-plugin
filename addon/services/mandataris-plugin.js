@@ -3,8 +3,35 @@ import memoize from '../utils/memoize';
 import Service, { inject as service } from '@ember/service';
 import { task, timeout } from 'ember-concurrency';
 import { tokenizeNames} from '../utils/text-tokenizing-utils';
+
 /**
 * RDFa Editor plugin that hints mandatarissen when typing their name.
+ * ---------------------------------------------------
+ * CODE REVIEW NOTES
+ * ---------------------------------------------------
+ *
+ *  INTERACTION PATTERNS
+ *  --------------------
+ *  For all incoming contexts, first looks whether there is a property which may be found with range Mandataris.
+ *  If encountered, scan text (with some weird tokenizing for names logic) if a potential name can be matched.
+ *  If mandataris(sen) are found, cards with suggestions to insert them are generated.
+ *  The highlighting occurs within async call.
+ *
+ *  POTENTIAL ISSUES/TODO
+ *  ---------------------
+ *  - The tokenizing might be too complex and restrictive at the same time.
+ *  - The restartable task is problematic, at restart other context then the intial ones may be provided.
+ *     It also needs to be invistigated wether the async highlight could result in double hinting.
+ *     e.g.: 'Felix' is highlighted but a slow response from a previous iteration might also add a hint at 'Feli'
+ *     This is unlikely here, as the fetching of mandatarissen occurs upfront, but might be problematic in e.g citaten plugin
+ *
+ *  OTHER INFO
+ *  ----------
+ *  - uses metamodel plugin utils to:
+ *    to fetch the correct property the reference of the mandataris should reside in.
+ * ---------------------------------------------------
+ * END CODE REVIEW NOTES
+ * ---------------------------------------------------
 *
 * @module editor-mandataris-plugin
 * @class RdfaEditorMandatarisPlugin
