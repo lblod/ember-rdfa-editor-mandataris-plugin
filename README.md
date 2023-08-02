@@ -1,4 +1,5 @@
 # @lblod/ember-rdfa-editor-mandataris-plugin
+:warning: This ember addon is no longer maintained.
 
 RDFa editor plugin to insert mandatarissen in the editor.
 
